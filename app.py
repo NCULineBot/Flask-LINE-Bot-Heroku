@@ -178,6 +178,7 @@ def Postback01(event):
 
         line_bot_api.reply_message(event.reply_token, picker)
     elif get_postback_data == 'reset':
+        Sheets.update_cell(1, 4, 'reset=true')
         picker = TemplateSendMessage(
             alt_text='選擇中...',
             template=ConfirmTemplate(
@@ -201,10 +202,12 @@ def Postback01(event):
         line_bot_api.reply_message(event.reply_token, picker)
 
     elif get_postback_data == 'reset_true':
-        Sheets.clear()
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='重置成功'))
+        if str(Sheets.cell(1,4)) == 'reset=true':
+            Sheets.clear()
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='重置成功'))
     elif get_postback_data == 'reset_false':
-
+        Sheets.update_cell(1,4,'reset=false')
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='看來你只是想試試看這個功能...'))
     elif get_postback_data == 'record_date':
         date = str(event.postback.params['date'])
         date = date.replace('-', '/')
