@@ -101,23 +101,23 @@ def handle_message(event):
             money = int(money)
             datas = Sheets.get_all_values()
             if money <= 0:
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請輸入有效的金額"))
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請輸入有效的金額:("))
             elif Sheets.cell(len(datas), 2).value == '*待輸入支出':
                 Sheets.update_cell(len(datas), 2, item)
                 Sheets.update_cell(len(datas), 3, str(-money))
                 data = Sheets.get_all_values()[-1]
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"成功紀錄:\n{data[0]}在{data[1]}項目中花費了{-int(data[2])}元"))
+                line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=f"成功紀錄:\n{data[0]}在{data[1]}項目中花費了{-int(data[2])}元"), TextSendMessage(text="若要繼續新增資料請重新選擇時間~")])
             elif Sheets.cell(len(datas), 2).value == '*待輸入收入':
                 Sheets.update_cell(len(datas), 2, item)
                 Sheets.update_cell(len(datas), 3, str(money))
                 data = Sheets.get_all_values()[-1]
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"成功紀錄:\n{data[0]}在{data[1]}項目中花費了{int(data[2])}元"))
+                line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=f"成功紀錄:\n{data[0]}在{data[1]}項目中獲得了{int(data[2])}元"), TextSendMessage(text="若要繼續新增資料請重新選擇時間~")])
             elif Sheets.cell(len(datas), 2).value == '*待輸入':
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇 收入/支出"))
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇 收入/支出:("))
             else:
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先使用記帳功能選擇時間"))
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇時間:("))
         except ValueError:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="不明的指令\n請輸入'功能選項'呼叫功能表"))
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="我聽不懂你在說什麼...\n請輸入'功能選項'呼叫功能表"))
 
     # Send To Line
     line_bot_api.reply_message(event.reply_token, buttons_template_message)
@@ -161,7 +161,7 @@ def Postback01(event):
             alt_text='查詢中...',
             template=ButtonsTemplate(
                 text='請選擇',
-                title='請選擇收入/支出',
+                title='請選擇要查詢的日期',
                 actions=[
                     DatetimePickerTemplateAction(
                         label='選擇日期',
@@ -227,12 +227,12 @@ def Postback01(event):
                 actions=[
                     PostbackAction(
                         label='收入',
-                        display_text='輸入中...',
+                        display_text='輸入中(收入)...',
                         data='record_income'
                     ),
                     PostbackAction(
                         label='支出',
-                        display_text='輸入中...',
+                        display_text='輸入中(支出)...',
                         data='record_expense'
                     )
                 ]
