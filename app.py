@@ -24,14 +24,13 @@ Sheet = GoogleSheets.open_by_key('1sXOLCHiH0n-HnmdiJzLVVDE5TjhoAPI3yN4Ku-4JUM4')
 Sheets = Sheet.sheet1
 # 寫入
 if Sheets.get_all_values() == []:
-    dataTitle = ["日期", "項目", "金額"]
+    dataTitle = ["日期", "項目", "金額", 'reset=false']
     Sheets.append_row(dataTitle)
 
 app = Flask(__name__)
 
 line_bot_api = LineBotApi(os.environ.get("CHANNEL_ACCESS_TOKEN"))
 handler = WebhookHandler(os.environ.get("CHANNEL_SECRET"))
-onaction = False
 
 ini_y, ini_m, ini_d = '2022', '06', '30'
 def get_now_time():
@@ -51,7 +50,7 @@ def get_now_time():
 @app.route("/", methods=["GET", "POST"])
 def callback():
     if request.method == "GET":
-        return "Hello Heroku"
+        return "<html><head><title>Hello Heroku</title>This is Get method</head></html>"
     if request.method == "POST":
         signature = request.headers["X-Line-Signature"]
         body = request.get_data(as_text=True)
@@ -128,24 +127,22 @@ def handle_message(event):
 # 新增功能1:歡迎訊息
 @handler.add(FollowEvent)
 def Welcome(event):
-    get_ID = event.source.userId
-
     # Send Welcome Message
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Got follow event'))
 
 @handler.add(PostbackEvent)
 def Postback01(event):
     get_now_time()
-    get_data = event.postback.data
-    if get_data == 'record':
+    get_postback_data = event.postback.data
+    if get_postback_data == 'record':
         picker = TemplateSendMessage(
             alt_text='紀錄中...',
             template=ButtonsTemplate(
-                text='請選擇日期',
-                title='YYYY-MM-dd',
+                text='西元年/月/日',
+                title='請選擇日期',
                 actions=[
                     DatetimePickerTemplateAction(
-                        label='Setting',
+                        label='按我選擇日期',
                         data='record_date',
                         mode='date',
                         initial=f'{ini_y}-{ini_m}-{ini_d}',
@@ -159,9 +156,8 @@ def Postback01(event):
         line_bot_api.reply_message(event.reply_token, picker)
 
 
-
         #line_bot_api.reply_message(event.reply_token, TextSendMessage(text='紀錄成功'))
-    elif get_data == 'inquire':
+    elif get_postback_data == 'inquire':
         picker = TemplateSendMessage(
             alt_text='查詢中...',
             template=ButtonsTemplate(
@@ -181,9 +177,7 @@ def Postback01(event):
         )
 
         line_bot_api.reply_message(event.reply_token, picker)
-    elif get_data == 'reset':
-        onaction = True
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='您真的要重置所有紀錄嗎?'))
+    elif get_postback_data == 'reset':
         picker = TemplateSendMessage(
             alt_text='選擇中...',
             template=ConfirmTemplate(
@@ -198,7 +192,7 @@ def Postback01(event):
                     PostbackAction(
                         label='否',
                         display_text='否',
-                        data='record_false'
+                        data='reset_false'
                     )
                 ]
             )
@@ -206,13 +200,12 @@ def Postback01(event):
 
         line_bot_api.reply_message(event.reply_token, picker)
 
-    elif get_data == 'reset_true':
-        if onaction:
-            Sheets.clear()
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='重置成功'))
-    elif get_data == 'reset_false':
-        onaction = False
-    elif get_data == 'record_date':
+    elif get_postback_data == 'reset_true':
+        Sheets.clear()
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='重置成功'))
+    elif get_postback_data == 'reset_false':
+
+    elif get_postback_data == 'record_date':
         date = str(event.postback.params['date'])
         date = date.replace('-', '/')
         datas = Sheets.get_all_values()
@@ -244,21 +237,21 @@ def Postback01(event):
 
         line_bot_api.reply_message(event.reply_token, picker)
 
-    elif get_data == 'record_income':
+    elif get_postback_data == 'record_income':
         datas = Sheets.get_all_values()
         if datas[-1][1] == '*待輸入' or datas[-1][1] == '*待輸入收入' or datas[-1][1] == '*待輸入支出':
             Sheets.update_cell(len(datas), 2, '*待輸入收入')
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f'請輸入收入項目與金額。\n(ex:撿到一百塊=100)'))
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f'請重新選擇日期'))
-    elif get_data == 'record_expense':
+    elif get_postback_data == 'record_expense':
         datas = Sheets.get_all_values()
         if datas[-1][1] == '*待輸入' or datas[-1][1] == '*待輸入收入' or datas[-1][1] == '*待輸入支出':
             Sheets.update_cell(len(datas), 2, '*待輸入支出')
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f'請輸入支出項目與金額。\n(ex:我的豆花=30)'))
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f'請重新選擇日期'))
-    elif get_data == 'inquire_date':
+    elif get_postback_data == 'inquire_date':
         date = str(event.postback.params['date'])
         date = date.replace('-', '/')
         datas = Sheets.get_all_values()
@@ -266,20 +259,23 @@ def Postback01(event):
         for data in datas:
             if data[0] == date:
                 result.append(data)
-        if result == []:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="找不到資料"))
+        if not result:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"找不到{date}的資料"))
         else:
             reply = []
             s = 0
             for re in result:
                 s += int(re[2])
-                if re[1] == '待輸入':
+                if re[1][0] == '*':
                     continue
                 if int(re[2]) < 0:
                     reply.append(TextSendMessage(text=f"{re[0]}在{re[1]}項目中花費了{-int(re[2])}元"))
                 else:
                     reply.append(TextSendMessage(text=f"{re[0]}在{re[1]}項目中存到了{re[2]}元"))
-            reply.append(TextSendMessage(text=f"{re[0]}的收支結算:{s}"))
+            if s >= 0:
+                reply.append(TextSendMessage(text=f"{re[0]}的收支結算:+{s}"))
+            else:
+                reply.append(TextSendMessage(text=f"{re[0]}的收支結算:{s}"))
             line_bot_api.reply_message(event.reply_token, reply)
 
     else:
