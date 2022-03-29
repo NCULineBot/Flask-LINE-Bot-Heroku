@@ -50,7 +50,7 @@ def get_now_time():
 @app.route("/", methods=["GET", "POST"])
 def callback():
     if request.method == "GET":
-        return "<html><head><title>Hello Heroku</title>This is Get method</head></html>"
+        return '<html><head><h1>Hello Heroku</h1><p>This is get method</p><p>Press link below to view sourcecode</p><a href="https://github.com/NCULineBot/Flask-LINE-Bot-Heroku/">Mozilla Manifesto</a></head></html>'
     if request.method == "POST":
         signature = request.headers["X-Line-Signature"]
         body = request.get_data(as_text=True)
