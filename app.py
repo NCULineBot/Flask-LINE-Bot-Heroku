@@ -112,7 +112,7 @@ def handle_message(event):
                 Sheets.update_cell(len(datas), 2, item)
                 Sheets.update_cell(len(datas), 3, str(money))
                 data = Sheets.get_all_values()[-1]
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"成功紀錄:\n{data[0]}在{data[1]}項目中花費了{-int(data[2])}元"))
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"成功紀錄:\n{data[0]}在{data[1]}項目中花費了{int(data[2])}元"))
             elif Sheets.cell(len(datas), 2).value == '*待輸入':
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇 收入/支出"))
             else:
@@ -202,7 +202,7 @@ def Postback01(event):
         line_bot_api.reply_message(event.reply_token, picker)
 
     elif get_postback_data == 'reset_true':
-        if str(Sheets.cell(1,4)) == 'reset=true':
+        if str(Sheets.cell(1,4).value) == 'reset=true':
             Sheets.clear()
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='重置成功'))
     elif get_postback_data == 'reset_false':
