@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "liquid-streamer-343612",
+  "private_key_id": "20f96166f6a8d0f1a18bda9f30ff0d9ab36e0e16",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCr2R+OU33mwiCb\n6oRKgdugEfUDYDtUsJ2vKffUqMS6B1mho2b0jUyOarUEcXXowMF71XXzPgHQMGaX\n0w5wgi3HlQcXxDrrLnG7PydDVqyD9YXc6kCxRthWCphmMViwALtf2ptMpY6aCeGb\n5oHOtOrBOCi4+QZPWoA8j3H9npgurjIJVrox0XRU2tuO9jKo8bSx/UkDNMHi0jAO\nFij+sKTneWSsTKffh/IH4174svpJwesqR1vbT6IdR2AI7RMNDoOodb33DZWRKtwR\ndnfnRg1XvP3XExajD79HAdCJleontmVXAWHuDfzVg1v7kyhTJaPh0VQl5PfvhcTe\n6mwfY/n3AgMBAAECggEABh5pgrpTUcuYuKR9iF+eT9FD3ZZoFmhhfPKsGdzWgF8x\noFE+obeEQc/n2RwnHB385alglUQgcWa/yGkh6vyfn6sdQQniJSyWrRmfDsU/yEUO\nOqL2oblJi6q96WmZZE7qXQveGrkMXky6xT/MYG1NrIqQ3KE1Sc8JoN5kqyih94t6\nQeuLoqtgVlKm6RgcIhoQ2+L/lfvVT1dTRu6t8GkJFFlAowqDHbdLyfQKqBqmrzhT\nQJA36My4pa2mvzJ+RuWvAt1SA+tIZzVJ7GF7GDIISm9X1EYsQ0jbGQwqyTyaSjKu\nheLwe9wEGk+hbbXGjL0rAJ1cy+2U+pPsRVJpA45jFQKBgQDqkN5yQL6C/Dx4sgZ4\nP/LshczWKV59IK1XDfdM9gl57Fm8y1dIITMPMNcX5Le9U7mQkhZtmQSUp3PwvS+G\npte4L0gjllH1ytsqx+/aamDoiq8k1BqYZ9Af3puA/FFNTKk4eNRGSzCQKGicwjwv\nLDBc1z1PXz4980FTHC2gGm+6AwKBgQC7jR3EYU1qYqh0HWMBM9IUsrR7vTZk4hvI\nrkjIDrCMhc+gYvG8h7UZHgvvvFjXRv6z6GPIWngXyJ8c7ET733+0bgGtxQbY7sWc\nzvB8EBtzMJkXT9/qL++MxLBFah6KqpB4Oo2b57SsNxbvkTE0qpT7znlQmyp+gcp3\nqHFkS6u3/QKBgDzgpmr+tLMoJcWpZpZ0+mY6f6Qhjn1pKrPKUyGtRV5YYh3mpFt7\nClZp9Zkk6i7/+Mw1rg55xT+Tijqzzw7iZGBQHSfnTpQ9Ns6On4iPTWFtBPHI/rIJ\nV3G+A5vhYHRwbgbTDTzFLPBtHGF648XWcSLXVfkwneXUKWMZkBnaYp7jAoGAL98d\nMfsEH5t/E+RMWQo5HT9gAhWRxL5SCS8zNJ1LQxMEpBOdUFnzR637rf2NT6W3bYRr\ns8Aj1y5GLsO/9+pcVlmd5BTeYpDPr+7CQ2h5GTXWXbTtmoERzASIWa90jEBtD8Mi\nUiEaZLrLB+svfBnuXTeej4yLlC7c1x4Pk2IdOqECgYB3wmSj9GZJEbSAEBetLEEp\nF1CWXghT+a3u9NdsbFN9bE2LpPxpbR5gt09z4FXUqJWBVRFO9B4z51DNihJRI8fn\n6hjifK+vpBvIkq4/4UYJeJ/CS41DPI7KHgF75KqglFpZwi1JbDS+k1lVwEQeEJfx\nYac9gZl9RhreILQ4Gs9m9A==\n-----END PRIVATE KEY-----\n",
+  "client_email": "id-131@liquid-streamer-343612.iam.gserviceaccount.com",
+  "client_id": "107998576885392258724",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/id-131%40liquid-streamer-343612.iam.gserviceaccount.com"
+}

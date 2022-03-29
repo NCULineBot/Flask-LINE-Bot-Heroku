@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "informatics-and-social-service",
+  "private_key_id": "4075fdd59a299d66c9df75b9fcf4a9e3445ee653",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCTYmz9CGC6vThP\nXQoEXhrPYH8U2bpDfL42HJC1oQhaZIiv5VCAgRqQr5eJNHY+QBiCzBl8TgXerMbM\n7QZapc1C+4C4egKqBoB4fEeZho1Uh2B50/64MZPUkKK05VwgdpDr3I+g3b/3k63g\n3mXYBzogfzxR/CWbuohW2ulQAA/li1A79JsdJ2sCYw+IY2bXxCxtV4MeRnqjoLVN\npuWDBBy3RUKKoL4vRt1IAATNdLpsSh6d+Ekz/+UkcfzDU0rw2Vv8f4dxaqX/OnGF\ngbM9528uNsTBdQJA47BB2Wvo9WZdG6yW3FDAQ7TBK/VnzAS+qE5cA2I5iV2ezMVB\nH+wegv0zAgMBAAECggEAEJVMihP9PkW4JkXjsKYeAiNraR8udBV/GXuRVL5vwCv7\nrT7yFeNw58K6HDgI7ewsVds9Kt1kj6+FFt28j0qEk/rUeu1Pi2372pKxQ7b+A/rP\ngiW2TWdWqN41UIFWIlj06XUBvCn3RZYaRGkBsJLvmWR3lwn1+VW9rXgoNFYtc7hT\nX5DoXVcIZPB4Num64oU8LFojzvMp9x3rRNHm01phEBRm8MOA26C/FuTPDanH/g61\ncNP1FTKg3J3XHVCW0KxTv0lWrRqDRoyO+qFl8NcRP2ug3dAvzgS7EQHMGqkZdWkr\nLKWk2Pzu75sOuDS4UnO+4EVyg23y1fjoig6KT4bZoQKBgQDN5ZiNCyTXsLcfw0tg\nkmrWODTcpHzxyR06SI9T/d/VFByuEgCRklog37lYIIA/CbNnQ0nqogaSpWaQy1KI\nN8eCrm9QxmIoSsoPRRlli7QU1umgeU0vLdf2yq4sZxedh2uv0wa/rr2Zc4HKZvuh\n2gXoLTlYulVOae6/RqB8G+v/CwKBgQC3P8i4YZny7e+GQMGWVgI+Vj58xyvju1eV\n3We04y6Kn9gkFoBRTcjiMQLFTtgYhJYtnW1iEjoZ7zllVR+D15Slc6iNGNXKq1lZ\nLxsBLCjdjX+KTGyB1JtYD1YegropQneoIeNDNkL3qluyfikIumqq68ZmOqgkdK9q\ne/QAxqDzeQKBgC5fD0R0xg9t1VBqA4f0cetdLUqkIR+zU8nUnbMk8kxjAzKRC1+9\nvl65BF08tKV94dHX7cXSR/ivF7J0mFnldiGQd7GRfHnmnitiPJ4KILywyl1B9Igz\novgKHcASV9c6sJ4gwNxa1ojA4vJaz0FcgQgRZ2D8VkoawZKCrZJGF5iRAoGAHZJd\ngeO+REXBcZjhpLEci5K/YsOBga6p47VnFvnSeOxypOA8tOIomNfv6odeuBYtZg8R\np9HpLmY8jO2/uDcB9fFEMgDf/2THdmzznqzRq286Ncc/e3Qj3YIcE7Bk+mOPi8Js\nOlx3UiBby+IwHQh4TjzeN4EfwUJTTIvURIvJTYECgYEAnSUQ0+Pus3XRuYhP6Ql5\n+0y51bqsvXVmC3yw5yzAaDmHDXroYiWx77938OrV8xHmRJhJtZJ9SJhUkfI/DEp4\nvSzQmO3NgmrMjmsA1gB0geqc/+8Q1JTCvqU4gpqTtgVnrq7DUQaOO65EZWBlY9nt\nFpmq6zwtWEax0uUCnNcZ6D0=\n-----END PRIVATE KEY-----\n",
+  "client_email": "nuclinebot@informatics-and-social-service.iam.gserviceaccount.com",
+  "client_id": "111021731585563051106",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/nuclinebot%40informatics-and-social-service.iam.gserviceaccount.com"
+}
