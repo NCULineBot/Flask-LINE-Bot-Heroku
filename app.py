@@ -22,10 +22,7 @@ GoogleSheets = gspread.authorize(Connect)
 # 開啟資料表及工作表
 Sheet = GoogleSheets.open_by_key('1sXOLCHiH0n-HnmdiJzLVVDE5TjhoAPI3yN4Ku-4JUM4')  # 這裡請輸入妳自己的試算表代號
 Sheets = Sheet.sheet1
-# 寫入
-if Sheets.get_all_values() == []:
-    dataTitle = ["日期", "項目", "金額", 'reset=false']
-    Sheets.append_row(dataTitle)
+
 
 app = Flask(__name__)
 
@@ -54,7 +51,10 @@ def callback():
     if request.method == "POST":
         signature = request.headers["X-Line-Signature"]
         body = request.get_data(as_text=True)
-
+        # 寫入
+        if Sheets.get_all_values() == []:
+            dataTitle = ["日期", "項目", "金額", 'reset=false']
+            Sheets.append_row(dataTitle)
         try:
             handler.handle(body, signature)
         except InvalidSignatureError:
