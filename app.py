@@ -50,7 +50,7 @@ def get_now_time():
 @app.route("/", methods=["GET", "POST"])
 def callback():
     if request.method == "GET":
-        return '<html><head><h1>Hello Heroku</h1><p>This is get method</p><p>Press link below to view sourcecode</p><a href="https://github.com/NCULineBot/Flask-LINE-Bot-Heroku/">Mozilla Manifesto</a></head></html>'
+        return '<html><head><h1>Hello Heroku</h1><p>This is get method</p><a href="https://github.com/NCULineBot/Flask-LINE-Bot-Heroku/">Press me to view sourcecode</a></head></html>'
     if request.method == "POST":
         signature = request.headers["X-Line-Signature"]
         body = request.get_data(as_text=True)
@@ -204,6 +204,8 @@ def Postback01(event):
     elif get_postback_data == 'reset_true':
         if str(Sheets.cell(1,4).value) == 'reset=true':
             Sheets.clear()
+            dataTitle = ["日期", "項目", "金額", 'reset=false']
+            Sheets.append_row(dataTitle)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='重置成功'))
     elif get_postback_data == 'reset_false':
         Sheets.update_cell(1,4,'reset=false')
