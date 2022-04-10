@@ -40,23 +40,7 @@ def get_now_time():
     if len(ini_d) == 1:
         ini_d = "0"+str(ini_d)
 
-date_picker = TemplateSendMessage(
-            alt_text='紀錄中...',
-            template=ButtonsTemplate(
-                text='西元年/月/日',
-                title='請選擇日期',
-                actions=[
-                    DatetimePickerTemplateAction(
-                        label='按我選擇日期',
-                        data='record_date',
-                        mode='date',
-                        initial=f'{ini_y}-{ini_m}-{ini_d}',
-                        min='2020-01-01',
-                        max='2099-12-31'
-                    )
-                ]
-            )
-        )
+
 
 function_label = TemplateSendMessage(
             alt_text='功能選項',
@@ -110,7 +94,6 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     get_message = event.message.text
-
     if get_message == '功能選項':
         line_bot_api.reply_message(event.reply_token, function_label)
     else:
@@ -151,7 +134,27 @@ def Welcome(event):
 def Postback01(event):
     get_now_time()
     get_postback_data = event.postback.data
+
+    date_picker = TemplateSendMessage(
+        alt_text='紀錄中...',
+        template=ButtonsTemplate(
+            text='西元年/月/日',
+            title='請選擇日期',
+            actions=[
+                DatetimePickerTemplateAction(
+                    label='按我選擇日期',
+                    data='record_date',
+                    mode='date',
+                    initial=f'{ini_y}-{ini_m}-{ini_d}',
+                    min='2020-01-01',
+                    max='2099-12-31'
+                )
+            ]
+        )
+    )
+    
     if get_postback_data == 'record':
+        date_picker.template.text = "000"
         line_bot_api.reply_message(event.reply_token, date_picker)
 
 
