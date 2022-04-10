@@ -40,6 +40,51 @@ def get_now_time():
     if len(ini_d) == 1:
         ini_d = "0"+str(ini_d)
 
+date_picker = TemplateSendMessage(
+            alt_text='紀錄中...',
+            template=ButtonsTemplate(
+                text='西元年/月/日',
+                title='請選擇日期',
+                actions=[
+                    DatetimePickerTemplateAction(
+                        label='按我選擇日期',
+                        data='record_date',
+                        mode='date',
+                        initial=f'{ini_y}-{ini_m}-{ini_d}',
+                        min='2020-01-01',
+                        max='2099-12-31'
+                    )
+                ]
+            )
+        )
+
+function_label = TemplateSendMessage(
+            alt_text='功能選項',
+            template=ButtonsTemplate(
+                title='功能選項',
+                text='請選擇要使用的功能',
+                actions=[
+                    PostbackAction(
+                        label='記帳',
+                        display_text='我要記帳',
+                        data='record'
+                    ),
+                    PostbackAction(
+                        label='查詢',
+                        display_text='我要查詢',
+                        data='inquire'
+                    ),
+                    PostbackAction(
+                        label='重置',
+                        display_text='我要重置',
+                        data='reset'
+                    ),
+                    URIAction(
+                        label='查看表單',
+                        uri='https://docs.google.com/spreadsheets/d/1sXOLCHiH0n-HnmdiJzLVVDE5TjhoAPI3yN4Ku-4JUM4/edit?usp=sharing')
+                ]
+            )
+        )
 
 
 
@@ -67,34 +112,7 @@ def handle_message(event):
     get_message = event.message.text
 
     if get_message == '功能選項':
-        buttons_template_message = TemplateSendMessage(
-            alt_text='功能選項',
-            template=ButtonsTemplate(
-                title='功能選項',
-                text='請選擇要使用的功能',
-                actions=[
-                    PostbackAction(
-                        label='記帳',
-                        display_text='我要記帳',
-                        data='record'
-                    ),
-                    PostbackAction(
-                        label='查詢',
-                        display_text='我要查詢',
-                        data='inquire'
-                    ),
-                    PostbackAction(
-                        label='重置',
-                        display_text='我要重置',
-                        data='reset'
-                    ),
-                    URIAction(
-                        label='查看表單',
-                        uri='https://docs.google.com/spreadsheets/d/1sXOLCHiH0n-HnmdiJzLVVDE5TjhoAPI3yN4Ku-4JUM4/edit?usp=sharing')
-                ]
-            )
-        )
-        line_bot_api.reply_message(event.reply_token, buttons_template_message)
+        line_bot_api.reply_message(event.reply_token, function_label)
     else:
         try:
             item, money = str(get_message).split('=')
@@ -120,7 +138,7 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text="我聽不懂你在說什麼...\n請輸入'功能選項'呼叫功能表"))
 
     # Send To Line
-    line_bot_api.reply_message(event.reply_token, buttons_template_message)
+    line_bot_api.reply_message(event.reply_token, function_label)
 
 
 # 新增功能1:歡迎訊息
@@ -134,30 +152,12 @@ def Postback01(event):
     get_now_time()
     get_postback_data = event.postback.data
     if get_postback_data == 'record':
-        picker = TemplateSendMessage(
-            alt_text='紀錄中...',
-            template=ButtonsTemplate(
-                text='西元年/月/日',
-                title='請選擇日期',
-                actions=[
-                    DatetimePickerTemplateAction(
-                        label='按我選擇日期',
-                        data='record_date',
-                        mode='date',
-                        initial=f'{ini_y}-{ini_m}-{ini_d}',
-                        min='2020-01-01',
-                        max='2099-12-31'
-                    )
-                ]
-            )
-        )
-
-        line_bot_api.reply_message(event.reply_token, picker)
+        line_bot_api.reply_message(event.reply_token, date_picker)
 
 
         #line_bot_api.reply_message(event.reply_token, TextSendMessage(text='紀錄成功'))
     elif get_postback_data == 'inquire':
-        picker = TemplateSendMessage(
+        date_picker = TemplateSendMessage(
             alt_text='查詢中...',
             template=ButtonsTemplate(
                 text='請選擇',
@@ -174,8 +174,7 @@ def Postback01(event):
                 ]
             )
         )
-
-        line_bot_api.reply_message(event.reply_token, picker)
+        line_bot_api.reply_message(event.reply_token, date_picker)
     elif get_postback_data == 'reset':
         Sheets.update_cell(1, 4, 'reset=true')
         picker = TemplateSendMessage(
