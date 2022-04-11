@@ -122,7 +122,8 @@ def handle_message(event):
         return_message.append(function_label)
         line_bot_api.reply_message(event.reply_token, return_message)
     else:
-        sticker = StickerSendMessage(packageId="11537",stickerId="52002738")
+        print(event.message.type)
+        sticker = StickerSendMessage(package_id="11537",sticker_id="52002738")
         line_bot_api.reply_message(event.reply_token,[sticker, function_label])
 
 
@@ -159,11 +160,11 @@ def Postback01(event):
     if get_postback_data == 'record':
         #date_picker.title = '請選擇要紀錄的日期'
         date_picker.template.actions[0].data= "record_date"
-        line_bot_api.reply_message(date_picker)
+        line_bot_api.reply_message(event.reply_token,date_picker)
     elif get_postback_data == 'inquire':
         #date_picker.title = '請選擇要查詢的日期'
         date_picker.template.actions[0].data = "inquire_date"
-        line_bot_api.reply_message(date_picker)
+        line_bot_api.reply_message(event.reply_token,date_picker)
     elif get_postback_data == 'reset':
         Sheets.update_cell(1, 4, 'reset=true')
         picker = TemplateSendMessage(
