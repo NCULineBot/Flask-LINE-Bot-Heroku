@@ -156,11 +156,11 @@ def Postback01(event):
 
     if get_postback_data == 'record':
         #date_picker.title = '請選擇要紀錄的日期'
-        date_picker.template.actions["data"]= "record_date"
+        date_picker.template.actions[0].data= "record_date"
         return_messanges.append(date_picker)
     elif get_postback_data == 'inquire':
         #date_picker.title = '請選擇要查詢的日期'
-        date_picker.template.actions["data"] = "inquire_date"
+        date_picker.template.actions[0].data = "inquire_date"
         return_messanges.append(date_picker)
     elif get_postback_data == 'reset':
         Sheets.update_cell(1, 4, 'reset=true')
@@ -232,7 +232,7 @@ def Postback01(event):
             Sheets.update_cell(len(datas), 2, '*待輸入收入')
             return_messanges.append(TextSendMessage(text=f'請輸入收入項目與金額。\n(ex:撿到一百塊=100)'))
         else:
-            date_picker.template.actions["data"]= "record_date"
+            date_picker.template.actions[0].data= "record_date"
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=f'請重新選擇日期'), date_picker])
     elif get_postback_data == 'record_expense':
         datas = Sheets.get_all_values()
@@ -240,7 +240,7 @@ def Postback01(event):
             Sheets.update_cell(len(datas), 2, '*待輸入支出')
             return_messanges.append(TextSendMessage(text=f'請輸入支出項目與金額。\n(ex:我的豆花=30)'))
         else:
-            date_picker.template.actions["data"] = "record_date"
+            date_picker.template.actions[0].data = "record_date"
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=f'請重新選擇日期'), date_picker])
     elif get_postback_data == 'inquire_date':
         date = str(event.postback.params['date'])
