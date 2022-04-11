@@ -93,42 +93,37 @@ def callback():
 
 @handler.add(MessageEvent)
 def handle_message(event):
+    return_message = []
     if event.message.type == "text":
         get_message = event.message.text
-        if get_message == '功能選項':
-            line_bot_api.reply_message(event.reply_token, function_label)
-        else:
-            try:
-                item, money = str(get_message).split('=')
-                money = int(money)
-                datas = Sheets.get_all_values()
-                if money <= 0:
-                    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請輸入有效的金額:("))
-                elif Sheets.cell(len(datas), 2).value == '*待輸入支出':
-                    Sheets.update_cell(len(datas), 2, item)
-                    Sheets.update_cell(len(datas), 3, str(-money))
-                    data = Sheets.get_all_values()[-1]
-                    line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=f"成功紀錄:\n{data[0]}在{data[1]}項目中花費了{-int(data[2])}元"), TextSendMessage(text="若要繼續新增資料請重新選擇時間~")])
-                elif Sheets.cell(len(datas), 2).value == '*待輸入收入':
-                    Sheets.update_cell(len(datas), 2, item)
-                    Sheets.update_cell(len(datas), 3, str(money))
-                    data = Sheets.get_all_values()[-1]
-                    line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=f"成功紀錄:\n{data[0]}在{data[1]}項目中獲得了{int(data[2])}元"), TextSendMessage(text="若要繼續新增資料請重新選擇時間~")])
-                elif Sheets.cell(len(datas), 2).value == '*待輸入':
-                    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇 收入/支出:("))
-                else:
-                    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇時間:("))
-            except ValueError:
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="我聽不懂你在說什麼...\n請輸入'功能選項'呼叫功能表"))
-
+        try:
+            item, money = str(get_message).split('=')
+            money = int(money)
+            datas = Sheets.get_all_values()
+            if money <= 0:
+                return_message.append(TextSendMessage(text="請輸入有效的金額:("))
+            elif Sheets.cell(len(datas), 2).value == '*待輸入支出':
+                Sheets.update_cell(len(datas), 2, item)
+                Sheets.update_cell(len(datas), 3, str(-money))
+                data = Sheets.get_all_values()[-1]
+                return_message.append(TextSendMessage(text=f"成功紀錄:\n{data[0]}在{data[1]}項目中花費了{-int(data[2])}元"))
+            elif Sheets.cell(len(datas), 2).value == '*待輸入收入':
+                Sheets.update_cell(len(datas), 2, item)
+                Sheets.update_cell(len(datas), 3, str(money))
+                data = Sheets.get_all_values()[-1]
+                return_message.append(TextSendMessage(text=f"成功紀錄:\n{data[0]}在{data[1]}項目中獲得了{int(data[2])}元"))
+            elif Sheets.cell(len(datas), 2).value == '*待輸入':
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇 收入/支出:("))
+            else:
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇時間:("))
+        except ValueError:
+            return_message.append(TextSendMessage(text="我聽不懂你在說什麼...\n要不要試試看下面這些功能~"))
         # Send To Line
-        line_bot_api.reply_message(event.reply_token, function_label)
+        return_message.append(function_label)
+        line_bot_api.reply_message(event.reply_token, return_message)
     else:
-        if event.message.type == "stiker":
-            sticker = StickerSendMessage(packageId="11537",stickerId="52002738")
-            line_bot_api.reply_message(sticker, function_label)
-        else:
-            line_bot_api.reply_message(function_label)
+        sticker = StickerSendMessage(packageId="11537",stickerId="52002738")
+        line_bot_api.reply_message(event.reply_token,[sticker, function_label])
 
 
 # 新增功能1:歡迎訊息
