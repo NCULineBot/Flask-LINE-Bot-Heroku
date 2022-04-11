@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import datetime
 # google sheet使用套件
 import gspread
@@ -122,9 +123,12 @@ def handle_message(event):
         return_message.append(function_label)
         line_bot_api.reply_message(event.reply_token, return_message)
     else:
-        print(event.message.type)
-        sticker = StickerSendMessage(package_id="11537",sticker_id="52002738")
-        line_bot_api.reply_message(event.reply_token,[sticker, function_label])
+        print(event.message.type, type(event.message.type))
+        if re.match(str(event.message.type), "sticker"):
+            sticker = StickerSendMessage(package_id=f"{event.message.package_id}", sticker_id=f"{event.message.sticker_id}")
+        else:
+            sticker = StickerSendMessage(package_id="11537",sticker_id="52002738")
+            line_bot_api.reply_message(event.reply_token,[sticker, function_label])
 
 
 # 新增功能1:歡迎訊息
