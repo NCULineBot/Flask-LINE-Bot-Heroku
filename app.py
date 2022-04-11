@@ -128,7 +128,7 @@ def handle_message(event):
             sticker = StickerSendMessage(package_id=f"{event.message.package_id}", sticker_id=f"{event.message.sticker_id}")
         else:
             sticker = StickerSendMessage(package_id="11537",sticker_id="52002738")
-            line_bot_api.reply_message(event.reply_token,[sticker, function_label])
+        line_bot_api.reply_message(event.reply_token,[sticker, function_label])
 
 
 # 新增功能1:歡迎訊息
