@@ -1,8 +1,6 @@
 import os
 import re
 from datetime import datetime
-#解碼圖片
-import base64
 # google sheet使用套件
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials as SAC
@@ -14,7 +12,7 @@ import time
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, TemplateSendMessage\
-    ,StickerSendMessage,ImageSendMessage, URIAction, PostbackAction, ButtonsTemplate, PostbackEvent, DatetimePickerTemplateAction, ConfirmTemplate
+    ,StickerSendMessage, URIAction, PostbackAction, ButtonsTemplate, PostbackEvent, DatetimePickerTemplateAction, ConfirmTemplate
 
 # 試算表金鑰與網址
 Json = 'informatics-and-social-service-4075fdd59a29.json'  # Json 的單引號內容請改成妳剛剛下載的那個金鑰
@@ -43,12 +41,7 @@ def get_now_time():
     if len(ini_d) == 1:
         ini_d = "0"+str(ini_d)
 
-def encode_image(filename):
-    e = filename.split(".")[-1]
-    img = open(filename, 'rb').read()
-    data = base64.b64encode(img).decode()
-    src = "data:image/{e};base64,{data}".format(e=e, data=data)
-    return src
+
 
 function_label = TemplateSendMessage(
             alt_text='功能選項',
@@ -125,13 +118,12 @@ def handle_message(event):
             else:
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇時間:("))
         except ValueError:
-            chart = encode_image("chart.jpg")
-            return_message.append(ImageSendMessage(original_content_url=chart))
             return_message.append(TextSendMessage(text="我聽不懂你在說什麼...\n要不要試試看下面這些功能~"))
         # Send To Line
         return_message.append(function_label)
         line_bot_api.reply_message(event.reply_token, return_message)
     else:
+        print(event.message.type, type(event.message.type))
         if re.match(str(event.message.type), "sticker"):
             sticker = StickerSendMessage(package_id=f"{event.message.package_id}", sticker_id=f"{event.message.sticker_id}")
         else:
