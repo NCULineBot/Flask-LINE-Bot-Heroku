@@ -128,7 +128,7 @@ def handle_message(event):
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇時間:("))
         except ValueError:
             encode_image("chart.jpg")
-            chart = open(chart.txt, "r").read()
+            chart = open("chart.txt", "r").read()
             return_message.append(ImageSendMessage(original_content_url=chart))
             return_message.append(TextSendMessage(text="我聽不懂你在說什麼...\n要不要試試看下面這些功能~"))
         # Send To Line
