@@ -1,6 +1,8 @@
 import os
 import re
 from datetime import datetime
+#解碼圖片
+import base64
 # google sheet使用套件
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials as SAC
@@ -42,15 +44,11 @@ def get_now_time():
         ini_d = "0"+str(ini_d)
 
 def encode_image(filename):
-    import base64
     e = filename.split(".")[-1]
     img = open(filename, 'rb').read()
     data = base64.b64encode(img).decode()
     src = "data:image/{e};base64,{data}".format(e=e, data=data)
-    urlTxt = open(f"{filename.split('.')[0]}.txt", "w")
-    urlTxt.write(src)
-    print("generated success")
-    urlTxt.close()
+    return src
 
 function_label = TemplateSendMessage(
             alt_text='功能選項',
@@ -127,8 +125,7 @@ def handle_message(event):
             else:
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇時間:("))
         except ValueError:
-            encode_image("chart.jpg")
-            chart = open("chart.txt", "r").read()
+            chart = encode_image("chart.jpg")
             return_message.append(ImageSendMessage(original_content_url=chart))
             return_message.append(TextSendMessage(text="我聽不懂你在說什麼...\n要不要試試看下面這些功能~"))
         # Send To Line
