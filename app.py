@@ -67,7 +67,7 @@ function_label = TemplateSendMessage(
                     ),
                     URIAction(
                         label='查看表單',
-                        uri='SheetUrl')
+                        uri=SheetUrl)
                 ]
             )
         )
