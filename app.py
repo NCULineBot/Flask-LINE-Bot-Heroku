@@ -21,7 +21,7 @@ Connect = SAC.from_json_keyfile_name(Json, Url)
 GoogleSheets = gspread.authorize(Connect)
 # 開啟資料表及工作表
 SheetCode = '1sXOLCHiH0n-HnmdiJzLVVDE5TjhoAPI3yN4Ku-4JUM4' # 這裡請輸入妳自己的試算表代號
-Sheet = GoogleSheets.open_by_key(SheetCode)  
+Sheet = GoogleSheets.open_by_key(SheetCode)
 SheetUrl = f"https://docs.google.com/spreadsheets/d/{SheetCode}/edit?usp=sharing"
 Sheets = Sheet.sheet1
 
@@ -123,7 +123,7 @@ income_expense_picker = TemplateSendMessage(
             )
         )
 
-picker = TemplateSendMessage(
+reset_picker = TemplateSendMessage(
             alt_text='選擇中...',
             template=ConfirmTemplate(
                 text='之前的資料都會不見喔!!',
