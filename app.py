@@ -245,7 +245,7 @@ def Postback01(event):
         #line_bot_api.reply_message(event.reply_token, income_expense_picker)
     elif get_postback_data[:9] == "category_":
         datas = Sheets.get_all_values()
-        if datas[-1][4] == '0':
+        if datas[-1][3] == '0':
             Sheets.update_cell(len(datas), 2, f'{get_postback_data[9:]}')
             Sheets.update_cell(len(datas), 3, '*待輸入')
             Sheets.update_cell(len(datas), 4, '0')
