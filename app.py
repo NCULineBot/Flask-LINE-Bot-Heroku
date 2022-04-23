@@ -84,7 +84,7 @@ category_picker = TemplateSendMessage(
                     ),
                     PostbackAction(
                         label='交通',
-                        display_text='(　ﾟ∀ﾟ) ﾉ♡',
+                        display_text='停車坐愛楓林晚(　ﾟ∀ﾟ) ﾉ♡\n今天騎什麼車',
                         data='category_traffic'
                     ),
                     PostbackAction(
