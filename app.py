@@ -42,7 +42,7 @@ def get_now_time():
     if len(ini_d) == 1:
         ini_d = "0"+str(ini_d)
 
-dataTitle = ["日期", "類別" "項目", "金額", 'reset=false']
+dataTitle = ["日期", "類別", "項目", "金額", 'reset=false']
 
 function_label = TemplateSendMessage(
             alt_text='功能選項',
