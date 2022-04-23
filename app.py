@@ -20,8 +20,9 @@ Url = ['https://spreadsheets.google.com/feeds']
 Connect = SAC.from_json_keyfile_name(Json, Url)
 GoogleSheets = gspread.authorize(Connect)
 # 開啟資料表及工作表
-Sheet = GoogleSheets.open_by_key('1sXOLCHiH0n-HnmdiJzLVVDE5TjhoAPI3yN4Ku-4JUM4')  # 這裡請輸入妳自己的試算表代號
-SheetUrl = f"https://docs.google.com/spreadsheets/d/{Sheet}/edit?usp=sharing"
+SheetCode = '1sXOLCHiH0n-HnmdiJzLVVDE5TjhoAPI3yN4Ku-4JUM4' # 這裡請輸入妳自己的試算表代號
+Sheet = GoogleSheets.open_by_key(SheetCode)  
+SheetUrl = f"https://docs.google.com/spreadsheets/d/{SheetCode}/edit?usp=sharing"
 Sheets = Sheet.sheet1
 
 app = Flask(__name__)
@@ -89,7 +90,7 @@ category_picker = TemplateSendMessage(
                     ),
                     PostbackAction(
                         label='娛樂',
-                        display_text='享受生活也是很重要的!',
+                        display_text='火山孝子｡:.ﾟヽ(*´∀`)ﾉﾟ.:｡',
                         data='category_entertain'
                     ),
                     PostbackAction(
