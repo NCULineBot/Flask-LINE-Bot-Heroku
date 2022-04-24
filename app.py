@@ -138,7 +138,7 @@ inquire_picker = TemplateSendMessage(
                     PostbackAction(
                         label='按照月',
                         display_text='讓我看看(#`皿´)',
-                        data='inquire_date'
+                        data='inquire_month'
                     ),
                     PostbackAction(
                         label='按照日期',
@@ -229,7 +229,7 @@ def handle_message(event):
 
 @handler.add(PostbackEvent)
 def Postback01(event):
-    return_messanges = []
+    return_messages = []
     get_now_time()
     get_postback_data = event.postback.data
 
@@ -301,20 +301,23 @@ def Postback01(event):
     # 查詢資料
     elif get_postback_data == 'inquire':
         line_bot_api.reply_message(event.reply_token, inquire_picker)
-    elif get_postback_data == "inquire_date":
-        date_picker.template.title = '請選擇要查詢的日期'
-        date_picker.template.actions[0].data = "find_date"
+    elif get_postback_data == "inquire_date" or get_postback_data == "inquire_month":
+        inquire_time_mapping = {"inquire_date":"日期", "inquire_month":"月份"}
+        date_picker.template.title = f'請選擇要查詢的{inquire_time_mapping[get_postback_data]}'
+        date_picker.template.actions[0].data = f"find_{get_postback_data[8:]}"
         line_bot_api.reply_message(event.reply_token, date_picker)
-    elif get_postback_data == 'find_date':
+    elif get_postback_data == 'find_date' or get_postback_data == "find_month":
         date = str(event.postback.params['date'])
         date = date.replace('-', '/')
+        month = date[:7]
+        time_mapping = {'find_date':date, "find_month":month}
         datas = Sheets.get_all_values()
-        result = []
-        for data in datas:
-            if data[0] == date:
-                result.append(data)
+        if get_postback_data == 'find_date':
+            result = [data for data in datas if data[0] == date]
+        else:
+            result = [data for data in datas if data[0][:7] == month]
         if not result:
-            return_messanges.append(TextSendMessage(text=f"找不到{date}的資料"))
+            return_messages.append(TextSendMessage(text=f"找不到{time_mapping[get_postback_data]}的資料"))
         else:
             sums = {"收支結算":0, "飲食":0, "交通":0, "娛樂":0, "其他":0, "收入":0}
             inquire_text = ""
@@ -329,28 +332,31 @@ def Postback01(event):
                     inquire_text += f"{bill[0]}在{bill[2]}花費了{-int(bill[3])}元({bill[1]})\n"
                 else:
                     inquire_text += f"{bill[0]}在{bill[2]}存到了{bill[3]}元\n"
-            return_messanges.append(TextSendMessage(text=inquire_text))
+            return_messages.append(TextSendMessage(text=inquire_text))
             sum_text = ""
             for key, value in sums.items():
-                sum_text += f"{bill[0]}的{key} : {value}\n"
+                sum_text += f"{time_mapping[get_postback_data]}的{key} : {value}\n"
             # 畫圖區
             font = FontProperties(fname="JasonHandwriting1.ttf", size=14)
             plot_tag = ["飲食", "交通", "娛樂", "其他"]
             plot_val = [abs(sums[tag]) for tag in plot_tag]
-            pictures,category_text,percent_text = plt.pie(plot_val,labels = plot_tag, autopct = "%0.1f%%", explode = (0.2,0,0,0), pctdistance = 0.65, labeldistance= 1.15, radius = 0.6)
-            for t in category_text:
-                t.set_fontproperties(font)
-            for t in percent_text:
-                t.set_fontproperties(font)
-            plt.title(f"{bill[0]}", fontproperties=font, x=0.5, y=1.03)
-            plt.savefig(IMGUR_PATH)
+            if sum(plot_val) != 0:
+                pictures,category_text,percent_text = plt.pie(plot_val,labels = plot_tag, autopct = "%0.1f%%", explode = (0.2,0,0,0), pctdistance = 0.65, labeldistance= 1.15, radius = 0.6)
+                for t in category_text:
+                    t.set_fontproperties(font)
+                for t in percent_text:
+                    t.set_fontproperties(font)
+                plt.title(f"{time_mapping[get_postback_data]}", fontproperties=font, x=0.5, y=1.03)
+                plt.savefig(IMGUR_PATH)
+                plt.clf()
+                # 上傳imgur
+                im = pyimgur.Imgur(IMGUR_CLIENT_ID)
+                uploaded_image = im.upload_image(IMGUR_PATH, title="my chart to imgur")
 
-            # 上傳imgur
-            im = pyimgur.Imgur(IMGUR_CLIENT_ID)
-            uploaded_image = im.upload_image(IMGUR_PATH, title="my chart to imgur")
-
-            return_messanges.append(ImageSendMessage(original_content_url=uploaded_image.link, preview_image_url=uploaded_image.link))
-            return_messanges.append(TextSendMessage(text=sum_text))
+                return_messages.append(ImageSendMessage(original_content_url=uploaded_image.link, preview_image_url=uploaded_image.link))
+                return_messages.append(TextSendMessage(text=sum_text))
+            else:
+                return_messages.append(TextSendMessage(text=sum_text))
     # 重置資料
     elif get_postback_data == 'reset':
         Sheets.update_cell(1, 5, 'reset=true')
@@ -359,15 +365,11 @@ def Postback01(event):
         if str(Sheets.cell(1,5).value) == 'reset=true':
             Sheets.clear()
             Sheets.append_row(dataTitle)
-            return_messanges.append(TextSendMessage(text='重置成功'))
+            return_messages.append(TextSendMessage(text='重置成功'))
     elif get_postback_data == 'reset_false':
         Sheets.update_cell(1,5,'reset=false')
-        return_messanges.append(TextSendMessage(text='看來你只是想試試看這個功能...'))
+        return_messages.append(TextSendMessage(text='看來你只是想試試看這個功能...'))
     else:
-        return_messanges.append(TextSendMessage(text='可以不要玩我的後台嗎?'))
-    return_messanges.append(function_label)
-    line_bot_api.reply_message(event.reply_token, return_messanges)
-
-#if __name__ == "__main__":
-#    port = int(os.environ.get('PORT', 5000))
-#    app.run(host='0.0.0.0', port=port)
+        return_messages.append(TextSendMessage(text='可以不要玩我的後台嗎?'))
+    return_messages.append(function_label)
+    line_bot_api.reply_message(event.reply_token, return_messages)
