@@ -10,8 +10,12 @@ import time
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, TemplateSendMessage\
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, TemplateSendMessage, ImageSendMessage\
     ,StickerSendMessage, URIAction, PostbackAction, ButtonsTemplate, PostbackEvent, DatetimePickerTemplateAction, ConfirmTemplate
+
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
+import pyimgur
 
 # 試算表金鑰與網址
 Json = 'informatics-and-social-service-4075fdd59a29.json'  # Json 的單引號內容請改成妳剛剛下載的那個金鑰
@@ -24,6 +28,9 @@ SheetCode = '1sXOLCHiH0n-HnmdiJzLVVDE5TjhoAPI3yN4Ku-4JUM4' # 這裡請輸入妳�
 Sheet = GoogleSheets.open_by_key(SheetCode)
 SheetUrl = f"https://docs.google.com/spreadsheets/d/{SheetCode}/edit?usp=sharing"
 Sheets = Sheet.sheet1
+# imgur
+IMGUR_CLIENT_ID = "37775a4995467d3"
+IMGUR_PATH = "chart.jpg"
 
 app = Flask(__name__)
 
@@ -122,6 +129,25 @@ income_expense_picker = TemplateSendMessage(
                 ]
             )
         )
+inquire_picker = TemplateSendMessage(
+            alt_text='查詢形式選擇中',
+            template=ButtonsTemplate(
+                title='請選擇查詢形式',
+                text='試問一個人手頭是有多緊才會回顧自已的帳本?',
+                actions=[
+                    PostbackAction(
+                        label='按照月',
+                        display_text='讓我看看(#`皿´)',
+                        data='inquire_date'
+                    ),
+                    PostbackAction(
+                        label='按照日期',
+                        display_text='讓我看看(#`Д´)ﾉ',
+                        data='inquire_date'
+                    )
+                ]
+            )
+        )
 
 reset_picker = TemplateSendMessage(
             alt_text='選擇中...',
@@ -136,7 +162,7 @@ reset_picker = TemplateSendMessage(
                     ),
                     PostbackAction(
                         label='否',
-                        display_text='否',
+                        display_text='不要!',
                         data='reset_false'
                     )
                 ]
@@ -151,7 +177,6 @@ def callback():
     if request.method == "POST":
         signature = request.headers["X-Line-Signature"]
         body = request.get_data(as_text=True)
-        # 寫入
         if Sheets.get_all_values() == []:
             Sheets.append_row(dataTitle)
         try:
@@ -182,7 +207,7 @@ def handle_message(event):
                 Sheets.update_cell(len(datas), 3, item)
                 Sheets.update_cell(len(datas), 4, str(money))
                 data = Sheets.get_all_values()[-1]
-                return_message.append(TextSendMessage(text=f"成功紀錄:\n{data[0]}在{data[1]}的{data[2]}獲得了{int(data[3])}元"))
+                return_message.append(TextSendMessage(text=f"成功紀錄:\n{data[0]}在{data[2]}獲得了{int(data[3])}元"))
             elif Sheets.cell(len(datas), 3).value == '*待輸入':
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇 收入/支出:("))
             else:
@@ -209,7 +234,7 @@ def Postback01(event):
     get_postback_data = event.postback.data
 
     date_picker = TemplateSendMessage(
-        alt_text='紀錄中...',
+        alt_text='選擇中...',
         template=ButtonsTemplate(
             text='西元年/月/日',
             title='請選擇日期',
@@ -241,37 +266,46 @@ def Postback01(event):
             Sheets.update_cell(len(datas), 2, '*待輸入')
             Sheets.update_cell(len(datas), 3, '*待輸入')
             Sheets.update_cell(len(datas), 4, '0')
-        line_bot_api.reply_message(event.reply_token, category_picker)
-        #line_bot_api.reply_message(event.reply_token, income_expense_picker)
-    elif get_postback_data[:9] == "category_":
+        line_bot_api.reply_message(event.reply_token, income_expense_picker)
+    elif get_postback_data == 'record_expense' or get_postback_data == 'record_income':
         datas = Sheets.get_all_values()
         if datas[-1][3] == '0':
-            Sheets.update_cell(len(datas), 2, f'{get_postback_data[9:]}')
-            Sheets.update_cell(len(datas), 3, '*待輸入')
-            Sheets.update_cell(len(datas), 4, '0')
-            line_bot_api.reply_message(event.reply_token, income_expense_picker)
+            if get_postback_data == 'record_expense':
+                Sheets.update_cell(len(datas), 2, '*待輸入')
+                Sheets.update_cell(len(datas), 3, '*待輸入支出')
+                Sheets.update_cell(len(datas), 4, '0')
+                line_bot_api.reply_message(event.reply_token, category_picker)
+            else:
+                Sheets.update_cell(len(datas), 2, '收入')
+                Sheets.update_cell(len(datas), 3, '*待輸入收入')
+                Sheets.update_cell(len(datas), 4, '0')
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(
+                    text=f'請輸入收入項目與金額。\n(ex:撿到一百塊=100)'))
         else:
             date_picker.template.title = '請選擇要紀錄的日期'
             date_picker.template.actions[0].data = "record_date"
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text="請先選擇日期"), date_picker])
-    elif get_postback_data == 'record_income' or get_postback_data == 'record_expense':
-        mapping = {'record_income':("收入", "(ex:撿到一百塊=100)"), 'record_expense':("支出", "(ex:我的豆花=30)")}
+    elif get_postback_data[:9] == "category_":
         datas = Sheets.get_all_values()
-        if datas[-1][4] == '0' and datas[-1][1][0] != "*":
-            Sheets.update_cell(len(datas), 3, f'*待輸入{mapping[get_postback_data[0]]}')
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f'請輸入{mapping[get_postback_data[0]]}項目與金額。\n{mapping[get_postback_data[1]]}'))
-        elif datas[-1][4] == '0':
-            line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=f'請重新選擇類別'), category_picker])
+        if datas[-1][3] == '0' and datas[-1][2] == "*待輸入支出":
+            category_mapping = {"eat":"飲食", "traffic":"交通", "entertain":"娛樂", "others":"其他"}
+            Sheets.update_cell(len(datas), 2, f'{category_mapping[get_postback_data[9:]]}')
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(
+                text=f'請輸入支出項目與金額。\n(ex:我的豆花=30)'))
+        elif datas[-1][3] == '0':
+            line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=f'請重新選擇支出/收入'), income_expense_picker])
         else:
             date_picker.template.title = '請選擇要紀錄的日期'
             date_picker.template.actions[0].data = "record_date"
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=f'請重新選擇日期'), date_picker])
     # 查詢資料
     elif get_postback_data == 'inquire':
+        line_bot_api.reply_message(event.reply_token, inquire_picker)
+    elif get_postback_data == "inquire_date":
         date_picker.template.title = '請選擇要查詢的日期'
-        date_picker.template.actions[0].data = "inquire_date"
-        line_bot_api.reply_message(event.reply_token,date_picker)
-    elif get_postback_data == 'inquire_date':
+        date_picker.template.actions[0].data = "find_date"
+        line_bot_api.reply_message(event.reply_token, date_picker)
+    elif get_postback_data == 'find_date':
         date = str(event.postback.params['date'])
         date = date.replace('-', '/')
         datas = Sheets.get_all_values()
@@ -282,20 +316,41 @@ def Postback01(event):
         if not result:
             return_messanges.append(TextSendMessage(text=f"找不到{date}的資料"))
         else:
-            s = 0
-            for re in result:
-                s += int(re[2])
-                if re[1][0] == '*':
+            sums = {"收支結算":0, "飲食":0, "交通":0, "娛樂":0, "其他":0, "收入":0}
+            inquire_text = ""
+            for bill in result:
+                if bill[1][0] == '*' or bill[2][0] == '*':
                     continue
-                if int(re[2]) < 0:
-
-                    return_messanges.append(TextSendMessage(text=f"{re[0]}在{re[1]}項目中花費了{-int(re[2])}元"))
+                for key in sums:
+                    if bill[1] == key:
+                        sums[key] += int(bill[3])
+                sums["收支結算"] += int(bill[3])
+                if int(bill[3]) < 0:
+                    inquire_text += f"{bill[0]}在{bill[2]}花費了{-int(bill[3])}元({bill[1]})\n"
                 else:
-                    return_messanges.append(TextSendMessage(text=f"{re[0]}在{re[1]}項目中存到了{re[2]}元"))
-            if s >= 0:
-                return_messanges.append(TextSendMessage(text=f"{re[0]}的收支結算:+{s}"))
-            else:
-                return_messanges.append(TextSendMessage(text=f"{re[0]}的收支結算:{s}"))
+                    inquire_text += f"{bill[0]}在{bill[2]}存到了{bill[3]}元\n"
+            return_messanges.append(TextSendMessage(text=inquire_text))
+            sum_text = ""
+            for key, value in sums.items():
+                sum_text += f"{bill[0]}的{key} : {value}\n"
+            # 畫圖區
+            font = FontProperties(fname="JasonHandwriting1.ttf", size=14)
+            plot_tag = ["飲食", "交通", "娛樂", "其他"]
+            plot_val = [abs(sums[tag]) for tag in plot_tag]
+            pictures,category_text,percent_text = plt.pie(plot_val,labels = plot_tag, autopct = "%0.1f%%", explode = (0.2,0,0,0), pctdistance = 0.65, labeldistance= 1.15, radius = 0.6)
+            for t in category_text:
+                t.set_fontproperties(font)
+            for t in percent_text:
+                t.set_fontproperties(font)
+            plt.title(f"{bill[0]}", fontproperties=font, x=0.5, y=1.03)
+            plt.savefig(IMGUR_PATH)
+
+            # 上傳imgur
+            im = pyimgur.Imgur(IMGUR_CLIENT_ID)
+            uploaded_image = im.upload_image(IMGUR_PATH, title="my chart to imgur")
+
+            return_messanges.append(ImageSendMessage(original_content_url=uploaded_image.link, preview_image_url=uploaded_image.link))
+            return_messanges.append(TextSendMessage(text=sum_text))
     # 重置資料
     elif get_postback_data == 'reset':
         Sheets.update_cell(1, 5, 'reset=true')
@@ -309,6 +364,10 @@ def Postback01(event):
         Sheets.update_cell(1,5,'reset=false')
         return_messanges.append(TextSendMessage(text='看來你只是想試試看這個功能...'))
     else:
-        print("Unexpect PostbackEvent!!!")
+        return_messanges.append(TextSendMessage(text='可以不要玩我的後台嗎?'))
     return_messanges.append(function_label)
     line_bot_api.reply_message(event.reply_token, return_messanges)
+
+#if __name__ == "__main__":
+#    port = int(os.environ.get('PORT', 5000))
+#    app.run(host='0.0.0.0', port=port)
