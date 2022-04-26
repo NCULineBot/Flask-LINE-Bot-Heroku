@@ -92,12 +92,12 @@ category_picker = TemplateSendMessage(
                     ),
                     PostbackAction(
                         label='交通',
-                        display_text='停車坐愛楓林晚(　ﾟ∀ﾟ) ﾉ♡\n今天騎什麼車',
+                        display_text='讀萬卷書不如行萬里路(^u^)',
                         data='category_traffic'
                     ),
                     PostbackAction(
                         label='娛樂',
-                        display_text='火山孝子｡:.ﾟヽ(*´∀`)ﾉﾟ.:｡',
+                        display_text='享受生活也是很重要地｡:.ﾟヽ(*´∀`)ﾉﾟ.:｡',
                         data='category_entertain'
                     ),
                     PostbackAction(
