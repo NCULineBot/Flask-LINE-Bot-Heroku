@@ -1,15 +1,16 @@
+# os套件用於取得環境變數
 import os
 # google sheet使用套件
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials as SAC
-
+# flask套件
 from flask import Flask, abort, request
+# python內建時間模組
 import time
-
+# linebot相關套件
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, TemplateSendMessage, ImageSendMessage\
-    ,StickerSendMessage, URIAction, PostbackAction, ButtonsTemplate, PostbackEvent, DatetimePickerTemplateAction, ConfirmTemplate
+from linebot.models import *
 
 # 試算表金鑰與網址
 Json = 'informatics-and-social-service-4075fdd59a29.json'  # Json 的單引號內容請改成妳剛剛下載的那個金鑰
@@ -42,7 +43,7 @@ def get_now_time():
         ini_m = "0"+str(ini_m)
     if len(ini_d) == 1:
         ini_d = "0"+str(ini_d)
-
+# 宣告物件區
 dataTitle = ["日期", "類別", "項目", "金額", 'reset=false']
 
 function_label = TemplateSendMessage(
@@ -73,7 +74,6 @@ function_label = TemplateSendMessage(
             )
         )
 
-
 income_expense_picker = TemplateSendMessage(
             alt_text='選擇中...',
             template=ConfirmTemplate(
@@ -93,6 +93,7 @@ income_expense_picker = TemplateSendMessage(
                 ]
             )
         )
+
 inquire_picker = TemplateSendMessage(
             alt_text='查詢形式選擇中',
             template=ButtonsTemplate(
