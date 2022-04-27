@@ -218,38 +218,46 @@ def Postback01(event):
     )
     # 紀錄資料
     if get_postback_data == 'record':
+        # 指定date_picker的標題
         date_picker.template.title = '請選擇要紀錄的日期'
+        # 指定date_picker回傳內容，將傳到下方record_date區塊
         date_picker.template.actions[0].data= "record_date"
         line_bot_api.reply_message(event.reply_token,date_picker)
     elif get_postback_data == 'record_date':
+        # 取得日期並傳換格式
         date = str(event.postback.params['date'])
         date = date.replace('-', '/')
         datas = Sheets.get_all_values()
         if datas[-1][2][0] != '*' and datas[-1][3][0] != '*':
+            # 一般情況將以得到的日期新增一行待輸入資料
             Sheets.append_row([date, '*待輸入', "*待輸入", '0'])
         else:
+            # 其他情況將複寫一行待輸入資料
             Sheets.update_cell(len(datas), 1, date)
             Sheets.update_cell(len(datas), 2, '*待輸入')
             Sheets.update_cell(len(datas), 3, '*待輸入')
             Sheets.update_cell(len(datas), 4, '0')
         line_bot_api.reply_message(event.reply_token, income_expense_picker)
-    # 接收income_expense_picker中的兩種回傳
+    # 接收上方income_expense_picker中的兩種回傳
     elif get_postback_data == 'record_expense' or get_postback_data == 'record_income':
         datas = Sheets.get_all_values()
         if datas[-1][3] == '0':
-            # 先前選過日期，分別將試算表更新成待輸入狀態
+            # 確認有待輸入的資料，於是分別將試算表更新成兩種待輸入狀態
             if get_postback_data == 'record_expense':
                 Sheets.update_cell(len(datas), 2, '*待輸入')
                 Sheets.update_cell(len(datas), 3, '*待輸入支出')
                 Sheets.update_cell(len(datas), 4, '0')
+                # 傳送支出類別選擇選項
                 line_bot_api.reply_message(event.reply_token, category_picker)
             else:
                 Sheets.update_cell(len(datas), 2, '收入')
                 Sheets.update_cell(len(datas), 3, '*待輸入收入')
                 Sheets.update_cell(len(datas), 4, '0')
+                # 直接請使用者寫入項目及金額(跳回@handler.add(MessageEvent)區塊)
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(
                     text=f'請輸入收入項目與金額。\n(ex:撿到一百塊=100)'))
         else:
+            # 無待輸入的資料
             date_picker.template.title = '請選擇要紀錄的日期'
             date_picker.template.actions[0].data = "record_date"
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text="請先選擇日期"), date_picker])
@@ -257,25 +265,31 @@ def Postback01(event):
     elif get_postback_data[:9] == "category_":
         datas = Sheets.get_all_values()
         if datas[-1][3] == '0' and datas[-1][2] == "*待輸入支出":
+            # 確認過選擇了支出後，將對應的類別寫入google sheet
             category_mapping = {"eat":"飲食", "traffic":"交通", "entertain":"娛樂", "others":"其他"}
             Sheets.update_cell(len(datas), 2, f'{category_mapping[get_postback_data[9:]]}')
             line_bot_api.reply_message(event.reply_token, TextSendMessage(
                 text=f'請輸入支出項目與金額。\n(ex:我的豆花=30)'))
         elif datas[-1][3] == '0':
+            # 沒有選擇收入/支出
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=f'請重新選擇支出/收入'), income_expense_picker])
         else:
+            # 無待輸入的資料
             date_picker.template.title = '請選擇要紀錄的日期'
             date_picker.template.actions[0].data = "record_date"
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=f'請重新選擇日期'), date_picker])
     # 查詢資料
     elif get_postback_data == 'inquire':
+        # 詢問使用者要用日期/月份查詢
         line_bot_api.reply_message(event.reply_token, inquire_picker)
     elif get_postback_data == "inquire_date" or get_postback_data == "inquire_month":
+        # 接著詢問確切日期
         inquire_time_mapping = {"inquire_date":"日期", "inquire_month":"月份"}
         date_picker.template.title = f'請選擇要查詢的{inquire_time_mapping[get_postback_data]}'
         date_picker.template.actions[0].data = f"find_{get_postback_data[8:]}"
         line_bot_api.reply_message(event.reply_token, date_picker)
     elif get_postback_data == 'find_date' or get_postback_data == "find_month":
+        # 做出對應的搜尋
         date = str(event.postback.params['date'])
         date = date.replace('-', '/')
         month = date[:7]
@@ -308,17 +322,22 @@ def Postback01(event):
             return_messages.append(TextSendMessage(text=sum_text))
     # 重置資料
     elif get_postback_data == 'reset':
+        # 以表單中的(1, 5)作為重置表單的緩衝
         Sheets.update_cell(1, 5, 'reset=true')
         line_bot_api.reply_message(event.reply_token, reset_picker)
     elif get_postback_data == 'reset_true':
+        # 收到"是"的選項時，只有在表單(1, 5)為'reset=true'才重置
         if str(Sheets.cell(1,5).value) == 'reset=true':
             Sheets.clear()
             Sheets.append_row(dataTitle)
             return_messages.append(TextSendMessage(text='重置成功'))
     elif get_postback_data == 'reset_false':
+        # 將表單中的(1, 5)改回'reset=false'
         Sheets.update_cell(1,5,'reset=false')
         return_messages.append(TextSendMessage(text='看來你只是想試試看這個功能...'))
     else:
+        # 未知的 postback事件
         return_messages.append(TextSendMessage(text='可以不要玩我的後台嗎?'))
+    # 若前面沒有傳送過訊息，將訊息陣列補上"功能選項"並傳送給使用者(因為每個reply_token只能使用一次)
     return_messages.append(function_label)
     line_bot_api.reply_message(event.reply_token, return_messages)
