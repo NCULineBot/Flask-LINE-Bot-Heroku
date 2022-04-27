@@ -156,6 +156,7 @@ def handle_message(event):
     return_message = []
     if event.message.type == "text":
         get_message = event.message.text
+        # 若輸入文字符合格式(項目=金額)則將資料寫入
         try:
             item, money = str(get_message).split('=')
             money = int(money)
@@ -176,9 +177,9 @@ def handle_message(event):
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇 收入/支出:("))
             else:
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text="請先選擇時間:("))
+        # 其他情況回傳訊息
         except ValueError:
             return_message.append(TextSendMessage(text="我聽不懂你在說什麼...\n要不要試試看下面這些功能~"))
-        # Send To Line
         return_message.append(function_label)
         line_bot_api.reply_message(event.reply_token, return_message)
     else:
