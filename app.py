@@ -1,5 +1,4 @@
 import os
-import re
 from datetime import datetime
 # google sheet使用套件
 import gspread
@@ -13,10 +12,6 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, TemplateSendMessage, ImageSendMessage\
     ,StickerSendMessage, URIAction, PostbackAction, ButtonsTemplate, PostbackEvent, DatetimePickerTemplateAction, ConfirmTemplate
 
-import matplotlib.pyplot as plt
-from matplotlib.font_manager import FontProperties
-import pyimgur
-
 # 試算表金鑰與網址
 Json = 'informatics-and-social-service-4075fdd59a29.json'  # Json 的單引號內容請改成妳剛剛下載的那個金鑰
 Url = ['https://spreadsheets.google.com/feeds']
@@ -28,9 +23,6 @@ SheetCode = '1sXOLCHiH0n-HnmdiJzLVVDE5TjhoAPI3yN4Ku-4JUM4' # 這裡請輸入妳�
 Sheet = GoogleSheets.open_by_key(SheetCode)
 SheetUrl = f"https://docs.google.com/spreadsheets/d/{SheetCode}/edit?usp=sharing"
 Sheets = Sheet.sheet1
-# imgur
-IMGUR_CLIENT_ID = "37775a4995467d3"
-IMGUR_PATH = "chart.jpg"
 
 app = Flask(__name__)
 
@@ -173,7 +165,7 @@ reset_picker = TemplateSendMessage(
 @app.route("/", methods=["GET", "POST"])
 def callback():
     if request.method == "GET":
-        return '<html><head><h1>Hello Heroku</h1><p>This is get method</p><a href="https://github.com/NCULineBot/Flask-LINE-Bot-Heroku/">Press me to view sourcecode</a></head></html>'
+        return '<html><head><h1>Hello Heroku</h1></head></html>'
     if request.method == "POST":
         signature = request.headers["X-Line-Signature"]
         body = request.get_data(as_text=True)
@@ -219,7 +211,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, return_message)
     else:
         print(event.message.type, type(event.message.type))
-        if re.match(str(event.message.type), "sticker"):
+        if event.message.type == "sticker":
             sticker = StickerSendMessage(package_id=f"{event.message.package_id}", sticker_id=f"{event.message.sticker_id}")
         else:
             sticker = StickerSendMessage(package_id="11537",sticker_id="52002738")
@@ -336,27 +328,7 @@ def Postback01(event):
             sum_text = ""
             for key, value in sums.items():
                 sum_text += f"{time_mapping[get_postback_data]}的{key} : {value}\n"
-            # 畫圖區
-            font = FontProperties(fname="JasonHandwriting1.ttf", size=14)
-            plot_tag = ["飲食", "交通", "娛樂", "其他"]
-            plot_val = [abs(sums[tag]) for tag in plot_tag]
-            if sum(plot_val) != 0:
-                pictures,category_text,percent_text = plt.pie(plot_val,labels = plot_tag, autopct = "%0.1f%%", explode = (0.2,0,0,0), pctdistance = 0.65, labeldistance= 1.15, radius = 0.6)
-                for t in category_text:
-                    t.set_fontproperties(font)
-                for t in percent_text:
-                    t.set_fontproperties(font)
-                plt.title(f"{time_mapping[get_postback_data]}", fontproperties=font, x=0.5, y=1.03)
-                plt.savefig(IMGUR_PATH)
-                plt.clf()
-                # 上傳imgur
-                im = pyimgur.Imgur(IMGUR_CLIENT_ID)
-                uploaded_image = im.upload_image(IMGUR_PATH, title="my chart to imgur")
-
-                return_messages.append(ImageSendMessage(original_content_url=uploaded_image.link, preview_image_url=uploaded_image.link))
-                return_messages.append(TextSendMessage(text=sum_text))
-            else:
-                return_messages.append(TextSendMessage(text=sum_text))
+            return_messages.append(TextSendMessage(text=sum_text))
     # 重置資料
     elif get_postback_data == 'reset':
         Sheets.update_cell(1, 5, 'reset=true')
