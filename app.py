@@ -1,5 +1,4 @@
 import os
-from datetime import datetime
 # google sheet使用套件
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials as SAC
@@ -14,7 +13,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEve
 
 # 試算表金鑰與網址
 Json = 'informatics-and-social-service-4075fdd59a29.json'  # Json 的單引號內容請改成妳剛剛下載的那個金鑰
-Url = ['https://spreadsheets.google.com/feeds']
+Url = ['https://spreadsheets.google.com/feeds'] # 這是goole sheet api 伺服器網址
 # 連結至資料表
 Connect = SAC.from_json_keyfile_name(Json, Url)
 GoogleSheets = gspread.authorize(Connect)
@@ -74,36 +73,6 @@ function_label = TemplateSendMessage(
             )
         )
 
-category_picker = TemplateSendMessage(
-            alt_text='類別選擇中',
-            template=ButtonsTemplate(
-                title='請選擇消費類別',
-                text='今天又在哪裡投資了',
-                actions=[
-                    PostbackAction(
-                        label='飲食',
-                        display_text='民以食為天^_^',
-                        data='category_eat'
-                    ),
-                    PostbackAction(
-                        label='交通',
-                        display_text='讀萬卷書不如行萬里路(^u^)',
-                        data='category_traffic'
-                    ),
-                    PostbackAction(
-                        label='娛樂',
-                        display_text='享受生活也是很重要地｡:.ﾟヽ(*´∀`)ﾉﾟ.:｡',
-                        data='category_entertain'
-                    ),
-                    PostbackAction(
-                        label='其他',
-                        display_text='別...別的地方啦',
-                        data='category_others'
-                    )
-
-                ]
-            )
-        )
 
 income_expense_picker = TemplateSendMessage(
             alt_text='選擇中...',
