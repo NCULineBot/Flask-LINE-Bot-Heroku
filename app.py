@@ -231,9 +231,11 @@ def Postback01(event):
             Sheets.update_cell(len(datas), 3, '*待輸入')
             Sheets.update_cell(len(datas), 4, '0')
         line_bot_api.reply_message(event.reply_token, income_expense_picker)
+    # 接收income_expense_picker中的兩種回傳
     elif get_postback_data == 'record_expense' or get_postback_data == 'record_income':
         datas = Sheets.get_all_values()
         if datas[-1][3] == '0':
+            # 先前選過日期，分別將試算表更新成待輸入狀態
             if get_postback_data == 'record_expense':
                 Sheets.update_cell(len(datas), 2, '*待輸入')
                 Sheets.update_cell(len(datas), 3, '*待輸入支出')
@@ -249,6 +251,7 @@ def Postback01(event):
             date_picker.template.title = '請選擇要紀錄的日期'
             date_picker.template.actions[0].data = "record_date"
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text="請先選擇日期"), date_picker])
+    # 接收來自不同支出類別的回傳
     elif get_postback_data[:9] == "category_":
         datas = Sheets.get_all_values()
         if datas[-1][3] == '0' and datas[-1][2] == "*待輸入支出":
