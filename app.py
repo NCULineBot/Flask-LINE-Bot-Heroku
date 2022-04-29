@@ -26,7 +26,7 @@ Sheets = Sheet.sheet1
 
 app = Flask(__name__)
 
-# 從環境變數取得存取代幣(CHANNEL_ACCESS_TOKEN)以及秘鑰(CHANNEL_SECRET)
+# 從環境變數取得存取代幣(CHANNEL_ACCESS_TOKEN)以及密鑰(CHANNEL_SECRET)
 # 環境變數的設置已在其他檔案做完，用的會是在heroku部屬時輸入的變數
 line_bot_api = LineBotApi(os.environ.get("CHANNEL_ACCESS_TOKEN"))
 handler = WebhookHandler(os.environ.get("CHANNEL_SECRET"))
