@@ -302,24 +302,28 @@ def Postback01(event):
         if not result:
             return_messages.append(TextSendMessage(text=f"找不到{time_mapping[get_postback_data]}的資料"))
         else:
-            sums = {"收支結算":0, "飲食":0, "交通":0, "娛樂":0, "其他":0, "收入":0}
+            total = 0
+            income = 0
+            category_total = {"飲食":0, "交通":0, "娛樂":0, "其他":0}
             inquire_text = ""
             for bill in result:
                 if bill[1][0] == '*' or bill[2][0] == '*':
-                    # 跳過待輸入的資料
                     continue
-                for key in sums:
+                for key in category_total:
                     if bill[1] == key:
-                        sums[key] += int(bill[3])
-                sums["收支結算"] += int(bill[3])
+                        category_total[key] += int(bill[3])
+                    elif bill[1] == "收入":
+                        income += int(bill[3])
+                total += int(bill[3])
                 if int(bill[3]) < 0:
                     inquire_text += f"{bill[0]}在{bill[2]}花費了{-int(bill[3])}元({bill[1]})\n"
                 else:
                     inquire_text += f"{bill[0]}在{bill[2]}存到了{bill[3]}元\n"
             return_messages.append(TextSendMessage(text=inquire_text))
-            sum_text = ""
-            for key, value in sums.items():
-                sum_text += f"{time_mapping[get_postback_data]}的{key} : {value}\n"
+            sum_text = f"{time}的收支結算 : {total}\n"
+            sum_text += f"{time}的收入 : {income}\n"
+            for key, value in category_total.items():
+                sum_text += f"{time}的{key} : {value}\n"
             return_messages.append(TextSendMessage(text=sum_text))
     # 重置資料
     elif get_postback_data == 'reset':
