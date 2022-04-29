@@ -306,6 +306,7 @@ def Postback01(event):
             inquire_text = ""
             for bill in result:
                 if bill[1][0] == '*' or bill[2][0] == '*':
+                    # 跳過待輸入的資料
                     continue
                 for key in sums:
                     if bill[1] == key:
