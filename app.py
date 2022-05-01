@@ -94,6 +94,37 @@ income_expense_picker = TemplateSendMessage(
             )
         )
 
+category_picker = TemplateSendMessage(
+            alt_text='類別選擇中',
+            template=ButtonsTemplate(
+                title='請選擇消費類別',
+                text='今天又在哪裡投資了',
+                actions=[
+                    PostbackAction(
+                        label='飲食',
+                        display_text='民以食為天^_^',
+                        data='category_eat'
+                    ),
+                    PostbackAction(
+                        label='交通',
+                        display_text='讀萬卷書不如行萬里路(^u^)',
+                        data='category_traffic'
+                    ),
+                    PostbackAction(
+                        label='娛樂',
+                        display_text='享受生活也是很重要地(*´∀`)ﾉﾟ',
+                        data='category_entertain'
+                    ),
+                    PostbackAction(
+                        label='其他',
+                        display_text='嘻嘻不告訴你~',
+                        data='category_others'
+                    )
+
+                ]
+            )
+        )
+
 inquire_picker = TemplateSendMessage(
             alt_text='查詢形式選擇中',
             template=ButtonsTemplate(
