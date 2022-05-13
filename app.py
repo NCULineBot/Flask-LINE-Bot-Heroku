@@ -377,3 +377,6 @@ def Postback01(event):
     # 若前面沒有傳送過訊息，將訊息陣列補上"功能選項"並傳送給使用者(因為每個reply_token只能使用一次)
     return_messages.append(function_label)
     line_bot_api.reply_message(event.reply_token, return_messages)
+if __name__ == "__main__":
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
