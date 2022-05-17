@@ -326,9 +326,11 @@ def Postback01(event):
         month = date[:7]
         time_mapping = {'find_date':date, "find_month":month}
         datas = Sheets.get_all_values()
+        time = date
         if get_postback_data == 'find_date':
             result = [data for data in datas if data[0] == date]
         else:
+            time = month
             result = [data for data in datas if data[0][:7] == month]
         if not result:
             return_messages.append(TextSendMessage(text=f"找不到{time_mapping[get_postback_data]}的資料"))
